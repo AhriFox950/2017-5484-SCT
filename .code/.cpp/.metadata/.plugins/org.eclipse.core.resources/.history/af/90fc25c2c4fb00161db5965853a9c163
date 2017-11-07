@@ -1,0 +1,15 @@
+/*
+ * Data.h
+ *
+ *  Created on: Feb 25, 2017
+ *      Author: AhriFox950
+ */
+
+#ifndef DATA_H_
+#define DATA_H_
+
+class Data {
+	public int t = 5;
+};
+
+#endif /* DATA_H_ */

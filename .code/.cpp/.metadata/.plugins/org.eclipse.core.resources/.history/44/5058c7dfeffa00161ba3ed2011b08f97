@@ -1,0 +1,150 @@
+#include <iostream>
+#include <memory>
+#include <string>
+#include <thread>
+
+#include <Joystick.h>
+#include <SampleRobot.h>
+#include <SmartDashboard/SendableChooser.h>
+#include <SmartDashboard/SmartDashboard.h>
+#include <RobotDrive.h>
+#include <Timer.h>
+#include <Victor.h>
+#include <Ports.h>
+#include <Solenoid.h>
+
+class Robot: public frc::SampleRobot
+{
+	// Setup global vars
+	int rearRight = 0;
+	int rearLeft = 1;
+	int frontRight = 2;
+	int frontLeft = 3;
+	bool _gear = false;
+
+	// Motors
+	frc::RobotDrive driveTrain  {rearRight, rearLeft, frontRight, frontLeft};
+
+	// Controllers
+	frc::Joystick joystick0 { 0 };
+	frc::Joystick joystick1 { 1 };
+
+	// Pnumatics
+	frc::Solenoid gear { 0 };
+
+	// Misc
+	frc::SendableChooser<std::string> chooser;
+	const std::string autoNameDefault = "Default";
+	const std::string autoNameCustom = "My Auto";
+
+public:
+	Robot()
+	{
+		driveTrain.SetExpiration(0.1);
+	}
+
+	double j0ly()
+	{
+		return joystick0.GetRawAxis(1);
+	};
+	double j0ry()
+	{
+		return joystick0.GetRawAxis(5);
+	};
+	bool j0ab()
+	{
+		return joystick0.GetRawButton(0);
+	}
+
+
+	void RobotInit()
+	{
+		chooser.AddDefault(autoNameDefault, autoNameDefault);
+		chooser.AddObject(autoNameCustom, autoNameCustom);
+		frc::SmartDashboard::PutData("Auto Modes", &chooser);
+
+		// Invert motors
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kFrontLeftMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kFrontRightMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kRearLeftMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kRearRightMotor, true);
+	}
+
+	void Autonomous()
+	{
+		auto autoSelected = chooser.GetSelected();
+		// std::string autoSelected = frc::SmartDashboard::GetString("Auto Selector", autoNameDefault);
+		std::cout << "Auto selected: " << autoSelected << std::endl;
+
+		if (autoSelected == autoNameCustom)
+		{
+			// Custom Auto goes here
+			std::cout << "Running custom Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 1.0); // spin at half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		}
+
+		else
+		{
+			// Default Auto goes here
+			std::cout << "Running default Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 0.0); // drive forwards half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		}
+	}
+
+	static void Gear()
+	{
+		// Set the gear to its init state.
+		gear.Set(_gear);
+
+		// Run while in teleop.
+		while (IsOperatorControl() && IsEnabled())
+		{
+			// Wait for the a button to be pressed.
+			if (j0ab)
+			{
+				// Set the gear
+				_gear = true;
+
+				// Wait
+				frc::Wait(0.5);
+			}
+
+			// Set the gear;
+			gear.Set(_gear);
+
+			// Delay thread to prevent overlaping
+			frc::Wait(0.1);
+		}
+	}
+
+
+	void OperatorControl() override
+	{
+		driveTrain.SetSafetyEnabled(true);
+
+		while (IsOperatorControl() && IsEnabled())
+		{
+
+			// Drive train controls
+			driveTrain.TankDrive(j0ly(), j0ry());
+
+			std::thread th (Gear);
+
+
+			// wait for a motor update time
+			frc::Wait(0.005);
+		}
+	}
+
+	void Test() override {
+
+	}
+};
+
+START_ROBOT_CLASS(Robot)

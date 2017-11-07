@@ -1,0 +1,82 @@
+#include <iostream>
+#include <memory>
+#include <string>
+
+#include <Joystick.h>
+#include <SampleRobot.h>
+#include <SmartDashboard/SendableChooser.h>
+#include <SmartDashboard/SmartDashboard.h>
+#include <RobotDrive.h>
+#include <Timer.h>
+
+/**
+ * This is a demo program showing the use of the RobotDrive class.
+ * The SampleRobot class is the base of a robot application that will
+ * automatically call your Autonomous and OperatorControl methods at the right
+ * time as controlled by the switches on the driver station or the field
+ * controls.
+ *
+ * WARNING: While it may look like a good choice to use for your code if you're
+ * inexperienced, don't. Unless you know what you are doing, complex code will
+ * be much more difficult under this system. Use IterativeRobot or Command-Based
+ * instead if you're new.
+ */
+class Robot: public frc::SampleRobot {
+
+	// Create the drive train
+	RobotDrive driveTrain;
+
+	// Create the joysticks
+	Joystick joystick0;
+	Joystick joystick1;
+
+	// Create all of the port values
+	// Drive Train Ports
+	int frontLeft  = 1;
+	int frontRight = 3;
+	int rearLeft   = 0;
+	int rearRight  = 2;
+
+	// Lift Ports
+	int lift       = 4;
+
+	// Shooter Ports
+	int shooter    = 5;
+
+	// Intake Ports
+	int intake     = 8;
+
+	// Hopper ports
+	int hopper0    = 7;
+	int hopper1    = 6;
+
+	// Gear ports ( sulonoid )
+	int gear       = 0;
+
+
+public:
+	Robot() {
+		// Set all of the ports
+		driveTrain(frontLeft, frontRight, rearLeft, rearRight);
+	}
+
+	void RobotInit() {
+
+	}
+
+	void Autonomous() {
+
+	}
+
+	void OperatorControl() override {
+
+
+		while (IsOperatorControl() && IsEnabled()) {
+
+			// wait for a motor update time
+			frc::Wait(0.005);
+		}
+	}
+};
+
+START_ROBOT_CLASS(Robot)

@@ -1,0 +1,2 @@
+C:\Users\Hailey\Desktop\2017-5484-SCT\.code\.labview\Robot\Euphoneium.bak\Vision Processing.vi (Vision Processing.vi)
+    - The VI expected to be at "C:\Users\Hailey\Desktop\2017-5484-SCT\.code\.labview\2017 Vision Example\Vision Processing.vi" was loaded from "C:\Users\Hailey\Desktop\2017-5484-SCT\.code\.labview\Robot\Euphoneium.bak\Vision Processing.vi".

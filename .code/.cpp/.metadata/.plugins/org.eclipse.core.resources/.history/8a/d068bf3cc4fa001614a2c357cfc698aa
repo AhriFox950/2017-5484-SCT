@@ -1,0 +1,154 @@
+#include <iostream>
+#include <memory>
+#include <string>
+#include <thread>
+
+#include <Joystick.h>
+#include <SampleRobot.h>
+#include <SmartDashboard/SendableChooser.h>
+#include <SmartDashboard/SmartDashboard.h>
+#include <RobotDrive.h>
+#include <Timer.h>
+#include <Victor.h>
+#include <Solenoid.h>
+
+
+/**
+ * This is a demo program showing the use of the RobotDrive class.
+ * The SampleRobot class is the base of a robot application that will
+ * automatically call your Autonomous and OperatorControl methods at the right
+ * time as controlled by the switches on the driver station or the field
+ * controls.
+ *
+ * WARNING: While it may look like a good choice to use for your code if you're
+ * inexperienced, don't. Unless you know what you are doing, complex code will
+ * be much more difficult under this system. Use IterativeRobot or Command-Based
+ * instead if you're new.
+ */
+class Robot: public frc::SampleRobot {
+
+	// Motors
+	RobotDrive driveTrain;
+	RobotDrive hopper;
+	Victor shooter;
+	Victor intake;
+	Victor lift;
+
+	// Joysticks
+	Joystick joystick0;
+	Joystick joystick1;
+
+	// Pnumatics
+	Solenoid gear;
+
+	// Ports
+	int frontLeft      = 1;
+	int frontRight     = 3;
+	int rearLeft       = 0;
+	int rearRight      = 2;
+	int liftPort       = 4;
+	int shooterPort    = 5;
+	int intakePort     = 8;
+	int hopper0        = 7;
+	int hopper1        = 6;
+	int gearPort       = 0;
+	bool gearStatus    = false;
+
+public:
+	Robot() {
+		// Set all of the ports for the drive train
+		driveTrain(frontLeft, frontRight, rearLeft, rearRight);
+		hopper(hopper0, hopper1);
+		shooter(shooterPort);
+		intake(intakePort);
+
+		// Pnumatics
+		gear(gearPort);
+
+		// Set the joystick ports
+		joystick0(0);
+		joystick1(1);
+
+		// Set expiration
+		driveTrain.SetExpiration(0.1);
+	}
+
+	void RobotInit() {
+
+	}
+
+	void Autonomous() {
+
+	}
+
+	void Gear(){
+		// Initalize the default value to closed.
+		gear.Set(gearStatus);
+
+		while (IsOperatorControl() && IsEnabled()){
+			// Check if the a button has been pressed.
+			if (joystick1.GetRawButton(0)){
+
+			}
+		}
+	}
+
+	void OperatorControl() override {
+
+		// Set the safety
+		driveTrain.SetSafetyEnabled(true);
+		shooter.SetSafetyEnabled(true);
+		lift.SetSafetyEnabled(true);
+		intake.SetSafetyEnabled(true);
+
+		// Gear thread
+		std::thread _gear (Gear);
+
+		// Run while in teleop
+		while (IsOperatorControl() && IsEnabled()) {
+
+			// Drive Train
+			driveTrain.TankDrive(joystick0.GetRawAxis(1), joystick1.GetRawAxis(5));
+
+			// Shooter
+			if (joystick1.GetRawButton(1) > 0.3){
+				shooter.Set(0.74);
+			}
+			else{
+				shooter.Set(0);
+			}
+
+			// Intake
+			if (joystick0.GetRawAxis(2) > 0.3){
+				intake.Set(1);
+			}
+			else{
+				intake.Set(0);
+			}
+
+			// Hopper
+			if (joystick1.GetRawButton(5)){
+				hopper.TankDrive(1, 0);
+			}
+			else if (joystick1.GetRawButton(4)){
+				hopper.TankDrive(0, 1);
+			}
+			else{
+				hopper.TankDrive(0.0,0.0);
+			}
+
+			//  LIft and Hang
+			if (joystick1.GetRawButton(2)){
+				lift.Set(1);
+			}
+			else{
+				lift.Set(0);
+			}
+
+			// wait for a motor update time
+			frc::Wait(0.005);
+		}
+	}
+};
+
+START_ROBOT_CLASS(Robot)

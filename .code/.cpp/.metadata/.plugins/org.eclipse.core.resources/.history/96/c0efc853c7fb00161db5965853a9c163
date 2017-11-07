@@ -1,0 +1,146 @@
+#include <iostream>
+#include <memory>
+#include <string>
+#include <thread>
+
+#include <Joystick.h>
+#include <SampleRobot.h>
+#include <SmartDashboard/SendableChooser.h>
+#include <SmartDashboard/SmartDashboard.h>
+#include <RobotDrive.h>
+#include <Timer.h>
+#include <Victor.h>
+#include <Solenoid.h>
+#include <Data.h>
+
+class Robot: public frc::SampleRobot
+{
+	// Motor ports
+	int rearRight = 0;
+	int rearLeft = 1;
+	int frontRight = 2;
+	int frontLeft = 3;
+	int _shooter = 5;
+	int lift = 4;
+	int _intake = 8;
+	int hopperLeft = 7;
+	int hopperRight = 8;
+
+	// Scalers
+	int shooterPower = .76;
+	int drivePower = .70;
+
+	// Pnuematics
+	bool _gear = false;
+
+	// Button & Axis mapping
+	int rt = 3;
+	int lt = 2;
+	int rsy = 1;
+	int lsy = 5;
+	int bx = 2;
+
+	// Motors
+	frc::RobotDrive driveTrain  {rearRight, rearLeft, frontRight, frontLeft};
+	frc::RobotDrive hopper { hopperLeft, hopperRight };
+
+	frc::Victor shooter = new frc::Victor { _shooter };
+	frc::Victor intake = new frc::Victor { intake };
+
+	// Controllers
+	frc::Joystick joystick0 { 0 };
+	frc::Joystick joystick1 { 1 };
+
+	// Pnumatics
+	frc::Solenoid gear { 0 };
+
+	// Misc
+	frc::SendableChooser<std::string> chooser;
+	const std::string autoNameDefault = "Default";
+	const std::string autoNameCustom = "My Auto";
+
+public:
+	Robot()
+	{
+		driveTrain.SetExpiration(0.1);
+	}
+
+	void RobotInit()
+	{
+		chooser.AddDefault(autoNameDefault, autoNameDefault);
+		chooser.AddObject(autoNameCustom, autoNameCustom);
+		frc::SmartDashboard::PutData("Auto Modes", &chooser);
+
+		// Invert motors
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kFrontLeftMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kFrontRightMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kRearLeftMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kRearRightMotor, true);
+		shooter.SetInverted(false);
+	}
+
+	void Autonomous()
+	{
+		auto autoSelected = chooser.GetSelected();
+		// std::string autoSelected = frc::SmartDashboard::GetString("Auto Selector", autoNameDefault);
+		std::cout << "Auto selected: " << autoSelected << std::endl;
+
+		if (autoSelected == autoNameCustom)
+		{
+			// Custom Auto goes here
+			std::cout << "Running custom Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 1.0); // spin at half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		}
+
+		else
+		{
+			// Default Auto goes here
+			std::cout << "Running default Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 0.0); // drive forwards half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		}
+	}
+
+	void OperatorControl() override
+	{
+
+		// Set Safety
+		driveTrain.SetSafetyEnabled(true);
+
+		// Basic teleop
+		while (IsOperatorControl() && IsEnabled())
+		{
+
+			// Drive train controls
+			// First, check if the right ( turbo ) trigger has been presesd. If so, use full values.
+			// If not, then use the scaler.
+			drivePower = (joystick0.GetRawAxis(rt) > 0.3) ? 1 : .79;
+			driveTrain.TankDrive(joystick0.GetRawAxis(lsy) * drivePower, joystick0.GetRawAxis(rsy) * drivePower);
+
+			// Shooter
+			// Check if the shooter has been presesd
+			_shooterPower = (joystick1.GetRawButton(bx))
+
+			// Intake controls
+			if (j1rt > 0.3)
+			{
+
+			}
+
+			// wait for a motor update time
+			frc::Wait(0.005);
+		}
+	}
+
+	void Test() override
+	{
+
+	}
+};
+
+START_ROBOT_CLASS(Robot)

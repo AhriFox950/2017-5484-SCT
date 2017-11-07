@@ -1,0 +1,184 @@
+14:16:20 **** Incremental Build of configuration Debug for project 2017 ****
+Info: Internal Builder is used for build
+arm-frc-linux-gnueabi-g++ -std=c++1y "-IC:\\Users\\AhriFox950/wpilib/cpp/current/include" "-IC:\\Users\\AhriFox950\\Desktop\\2017-5484-SCT\\.code\\.cpp\\2017\\src" "-IC:\\Users\\AhriFox950/wpilib/user/cpp/include" -O0 -Og -g3 -Wall -c -fmessage-length=0 -o "src\\Robot.o" "..\\src\\Robot.cpp" 
+..\src\Robot.cpp: In constructor 'Robot::Robot()':
+..\src\Robot.cpp:59:10: error: no matching function for call to 'frc::RobotDrive::RobotDrive()'
+  Robot() {
+          ^
+..\src\Robot.cpp:59:10: note: candidates are:
+In file included from ..\src\Robot.cpp:11:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:52:3: note: frc::RobotDrive::RobotDrive(std::shared_ptr<frc::SpeedController>, std::shared_ptr<frc::SpeedController>, std::shared_ptr<frc::SpeedController>, std::shared_ptr<frc::SpeedController>)
+   RobotDrive(std::shared_ptr<SpeedController> frontLeftMotor,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:52:3: note:   candidate expects 4 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:50:3: note: frc::RobotDrive::RobotDrive(frc::SpeedController&, frc::SpeedController&, frc::SpeedController&, frc::SpeedController&)
+   RobotDrive(SpeedController& frontLeftMotor, SpeedController& rearLeftMotor,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:50:3: note:   candidate expects 4 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:48:3: note: frc::RobotDrive::RobotDrive(frc::SpeedController*, frc::SpeedController*, frc::SpeedController*, frc::SpeedController*)
+   RobotDrive(SpeedController* frontLeftMotor, SpeedController* rearLeftMotor,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:48:3: note:   candidate expects 4 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:46:3: note: frc::RobotDrive::RobotDrive(std::shared_ptr<frc::SpeedController>, std::shared_ptr<frc::SpeedController>)
+   RobotDrive(std::shared_ptr<SpeedController> leftMotor,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:46:3: note:   candidate expects 2 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:45:3: note: frc::RobotDrive::RobotDrive(frc::SpeedController&, frc::SpeedController&)
+   RobotDrive(SpeedController& leftMotor, SpeedController& rightMotor);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:45:3: note:   candidate expects 2 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:44:3: note: frc::RobotDrive::RobotDrive(frc::SpeedController*, frc::SpeedController*)
+   RobotDrive(SpeedController* leftMotor, SpeedController* rightMotor);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:44:3: note:   candidate expects 2 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:42:3: note: frc::RobotDrive::RobotDrive(int, int, int, int)
+   RobotDrive(int frontLeftMotorChannel, int rearLeftMotorChannel,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:42:3: note:   candidate expects 4 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:41:3: note: frc::RobotDrive::RobotDrive(int, int)
+   RobotDrive(int leftMotorChannel, int rightMotorChannel);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:41:3: note:   candidate expects 2 arguments, 0 provided
+..\src\Robot.cpp:59:10: error: no matching function for call to 'frc::RobotDrive::RobotDrive()'
+  Robot() {
+          ^
+..\src\Robot.cpp:59:10: note: candidates are:
+In file included from ..\src\Robot.cpp:11:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:52:3: note: frc::RobotDrive::RobotDrive(std::shared_ptr<frc::SpeedController>, std::shared_ptr<frc::SpeedController>, std::shared_ptr<frc::SpeedController>, std::shared_ptr<frc::SpeedController>)
+   RobotDrive(std::shared_ptr<SpeedController> frontLeftMotor,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:52:3: note:   candidate expects 4 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:50:3: note: frc::RobotDrive::RobotDrive(frc::SpeedController&, frc::SpeedController&, frc::SpeedController&, frc::SpeedController&)
+   RobotDrive(SpeedController& frontLeftMotor, SpeedController& rearLeftMotor,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:50:3: note:   candidate expects 4 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:48:3: note: frc::RobotDrive::RobotDrive(frc::SpeedController*, frc::SpeedController*, frc::SpeedController*, frc::SpeedController*)
+   RobotDrive(SpeedController* frontLeftMotor, SpeedController* rearLeftMotor,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:48:3: note:   candidate expects 4 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:46:3: note: frc::RobotDrive::RobotDrive(std::shared_ptr<frc::SpeedController>, std::shared_ptr<frc::SpeedController>)
+   RobotDrive(std::shared_ptr<SpeedController> leftMotor,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:46:3: note:   candidate expects 2 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:45:3: note: frc::RobotDrive::RobotDrive(frc::SpeedController&, frc::SpeedController&)
+   RobotDrive(SpeedController& leftMotor, SpeedController& rightMotor);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:45:3: note:   candidate expects 2 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:44:3: note: frc::RobotDrive::RobotDrive(frc::SpeedController*, frc::SpeedController*)
+   RobotDrive(SpeedController* leftMotor, SpeedController* rightMotor);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:44:3: note:   candidate expects 2 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:42:3: note: frc::RobotDrive::RobotDrive(int, int, int, int)
+   RobotDrive(int frontLeftMotorChannel, int rearLeftMotorChannel,
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:42:3: note:   candidate expects 4 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:41:3: note: frc::RobotDrive::RobotDrive(int, int)
+   RobotDrive(int leftMotorChannel, int rightMotorChannel);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:41:3: note:   candidate expects 2 arguments, 0 provided
+..\src\Robot.cpp:59:10: error: no matching function for call to 'frc::Victor::Victor()'
+  Robot() {
+          ^
+..\src\Robot.cpp:59:10: note: candidate is:
+In file included from ..\src\Robot.cpp:13:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/Victor.h:22:12: note: frc::Victor::Victor(int)
+   explicit Victor(int channel);
+            ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Victor.h:22:12: note:   candidate expects 1 argument, 0 provided
+..\src\Robot.cpp:59:10: error: no matching function for call to 'frc::Victor::Victor()'
+  Robot() {
+          ^
+..\src\Robot.cpp:59:10: note: candidate is:
+In file included from ..\src\Robot.cpp:13:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/Victor.h:22:12: note: frc::Victor::Victor(int)
+   explicit Victor(int channel);
+            ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Victor.h:22:12: note:   candidate expects 1 argument, 0 provided
+..\src\Robot.cpp:59:10: error: no matching function for call to 'frc::Victor::Victor()'
+  Robot() {
+          ^
+..\src\Robot.cpp:59:10: note: candidate is:
+In file included from ..\src\Robot.cpp:13:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/Victor.h:22:12: note: frc::Victor::Victor(int)
+   explicit Victor(int channel);
+            ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Victor.h:22:12: note:   candidate expects 1 argument, 0 provided
+..\src\Robot.cpp:59:10: error: no matching function for call to 'frc::Joystick::Joystick()'
+  Robot() {
+          ^
+..\src\Robot.cpp:59:10: note: candidates are:
+In file included from ..\src\Robot.cpp:7:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/Joystick.h:52:3: note: frc::Joystick::Joystick(int, int, int)
+   Joystick(int port, int numAxisTypes, int numButtonTypes);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Joystick.h:52:3: note:   candidate expects 3 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/Joystick.h:51:12: note: frc::Joystick::Joystick(int)
+   explicit Joystick(int port);
+            ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Joystick.h:51:12: note:   candidate expects 1 argument, 0 provided
+..\src\Robot.cpp:59:10: error: no matching function for call to 'frc::Joystick::Joystick()'
+  Robot() {
+          ^
+..\src\Robot.cpp:59:10: note: candidates are:
+In file included from ..\src\Robot.cpp:7:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/Joystick.h:52:3: note: frc::Joystick::Joystick(int, int, int)
+   Joystick(int port, int numAxisTypes, int numButtonTypes);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Joystick.h:52:3: note:   candidate expects 3 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/Joystick.h:51:12: note: frc::Joystick::Joystick(int)
+   explicit Joystick(int port);
+            ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Joystick.h:51:12: note:   candidate expects 1 argument, 0 provided
+..\src\Robot.cpp:59:10: error: no matching function for call to 'frc::Solenoid::Solenoid()'
+  Robot() {
+          ^
+..\src\Robot.cpp:59:10: note: candidates are:
+In file included from ..\src\Robot.cpp:14:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/Solenoid.h:31:3: note: frc::Solenoid::Solenoid(int, int)
+   Solenoid(int moduleNumber, int channel);
+   ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Solenoid.h:31:3: note:   candidate expects 2 arguments, 0 provided
+C:\Users\AhriFox950/wpilib/cpp/current/include/Solenoid.h:30:12: note: frc::Solenoid::Solenoid(int)
+   explicit Solenoid(int channel);
+            ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Solenoid.h:30:12: note:   candidate expects 1 argument, 0 provided
+..\src\Robot.cpp:61:14: error: no match for 'operator=' (operand types are 'frc::RobotDrive' and 'frc::RobotDrive*')
+   driveTrain = new RobotDrive( frontLeft, frontRight, rearLeft, rearRight );
+              ^
+..\src\Robot.cpp:61:14: note: candidate is:
+In file included from ..\src\Robot.cpp:11:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:59:15: note: frc::RobotDrive& frc::RobotDrive::operator=(const frc::RobotDrive&) <deleted>
+   RobotDrive& operator=(const RobotDrive&) = delete;
+               ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/RobotDrive.h:59:15: note:   no known conversion for argument 1 from 'frc::RobotDrive*' to 'const frc::RobotDrive&'
+..\src\Robot.cpp:62:26: error: no match for call to '(frc::RobotDrive) (int&, int&)'
+   hopper(hopper0, hopper1);
+                          ^
+..\src\Robot.cpp:63:11: error: no match for 'operator=' (operand types are 'frc::Victor' and 'int')
+   shooter = (shooterPort);
+           ^
+..\src\Robot.cpp:63:11: note: candidate is:
+In file included from ..\src\Robot.cpp:13:0:
+C:\Users\AhriFox950/wpilib/cpp/current/include/Victor.h:20:7: note: frc::Victor& frc::Victor::operator=(const frc::Victor&) <deleted>
+ class Victor : public PWMSpeedController {
+       ^
+C:\Users\AhriFox950/wpilib/cpp/current/include/Victor.h:20:7: note:   no known conversion for argument 1 from 'int' to 'const frc::Victor&'
+..\src\Robot.cpp:64:20: error: no match for call to '(frc::Victor) (int&)'
+   intake(intakePort);
+                    ^
+..\src\Robot.cpp:67:16: error: no match for call to '(frc::Solenoid) (int&)'
+   gear(gearPort);
+                ^
+..\src\Robot.cpp:70:14: error: no match for call to '(frc::Joystick) (int)'
+   joystick0(0);
+              ^
+..\src\Robot.cpp:71:14: error: no match for call to '(frc::Joystick) (int)'
+   joystick1(1);
+              ^
+..\src\Robot.cpp: In member function 'virtual void Robot::OperatorControl()':
+..\src\Robot.cpp:115:26: error: invalid use of non-static member function
+   std::thread _gear (Gear);
+                          ^
+
+14:16:23 Build Finished (took 2s.901ms)
+

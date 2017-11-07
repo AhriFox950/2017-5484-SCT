@@ -1,0 +1,11 @@
+13:32:29 **** Rebuild of configuration Debug for project practiceBot ****
+Info: Internal Builder is used for build
+arm-frc-linux-gnueabi-g++ -std=c++1y "-IC:\\Users\\Robotics/wpilib/cpp/current/include" "-IC:\\Users\\Robotics\\Desktop\\2017-5484-SCT\\.code\\.cpp\\practiceBot\\src" "-IC:\\Users\\Robotics/wpilib/user/cpp/include" -O0 -Og -g3 -Wall -c -fmessage-length=0 -o "src\\Robot.o" "..\\src\\Robot.cpp" 
+Cannot run program "arm-frc-linux-gnueabi-g++": Launching failed
+
+Error: Program "arm-frc-linux-gnueabi-g++" not found in PATH
+PATH=[\usr\local\bin;C:/Program Files/Java/jre1.8.0_121/bin/server;C:/Program Files/Java/jre1.8.0_121/bin;C:/Program Files/Java/jre1.8.0_121/lib/amd64;C:\ProgramData\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files (x86)\IVI Foundation\VISA\WinNT\Bin\;C:\Program Files\IVI Foundation\VISA\Win64\Bin\;C:\Program Files (x86)\IVI Foundation\VISA\WinNT\Bin;C:\Program Files\Git\cmd;C:\MinGW\bin;C:\Users\Robotics\AppData\Local\Microsoft\WindowsApps;;C:\Users\Robotics\Desktop]
+
+
+13:32:29 Build Finished (took 96ms)
+

@@ -1,0 +1,551 @@
+// Base includes
+#include <iostream>
+#include <memory>
+#include <string>
+#include <thread>
+#include <chrono>
+#include <cmath>
+
+// FRC inclusions
+#include <Joystick.h>
+#include <SampleRobot.h>
+#include <SmartDashboard/SendableChooser.h>
+#include <SmartDashboard/SmartDashboard.h>
+#include <RobotDrive.h>
+#include <Timer.h>
+#include <Victor.h>
+#include <Solenoid.h>
+#include "WPILib.h"
+#include "AHRS.h"
+#include "Encoder.h"
+#include "Solenoid.h"
+
+// This is the main class for the program
+class Robot: public frc::SampleRobot
+{
+	// Scalers
+	int shooterPower = .76;
+	int drivePower = .70;
+
+	// Boleans
+	bool shooterStatus = false;
+	bool gearStatus = false;
+
+	// Navx Data
+	const double kToleranceDegrees = 2.0f;
+	AHRS *ahrs;
+
+	// Motor ports
+	int rearRight = 0;
+	int rearLeft = 1;
+	int frontRight = 2;
+	int frontLeft = 3;
+	int _shooter = 5;
+	int lift = 4;
+	int _intake = 8;
+	int hopperLeft = 7;
+	int hopperRight = 6;
+	int gear = 0;
+
+	// Button & Axis mapping
+	int rt = 3;
+	int lt = 2;
+	int rsy = 1;
+	int lsy = 5;
+	int bx = 2;
+	int ab = 0;
+	int xb = 2;
+
+	// Motors [ SET ]
+	frc::RobotDrive driveTrain  {rearRight, frontRight, frontLeft, rearLeft};
+	frc::RobotDrive hopper { hopperLeft, hopperRight };
+
+	// Motors [ SINGLE ]
+	frc::Victor shooter  { _shooter };
+	//frc::Victor testMotor { testPort };
+	frc::Victor intake { _intake };
+	frc::Victor Lift { lift };
+
+	// Pnumants
+	frc::Solenoid Gear { gear };
+
+	// Controllers
+	frc::Joystick joystick0 { 0 };
+	frc::Joystick joystick1 { 1 };
+
+	// Atonomous Selectors
+	frc::SendableChooser<std::string> chooser;
+	const std::string autoNameDefault = "Default";
+	const std::string autoNameCustom = "My Auto";
+	const std::string driveStraight = "Drive Straight";
+	const std::string goToGearR = "Drive to gear from right";
+	const std::string goToGearL = "Drive to gear from left";
+	const std::string none = "No aton";
+
+public:
+	Robot()
+	{
+		// Set motor expirations
+		driveTrain.SetExpiration(0.1);
+		shooter.SetExpiration(0.1);
+
+		// Attempt to initalize the controller
+		try
+		{
+			ahrs = new AHRS(SPI::Port::kMXP);
+		}
+		catch (std::exception& ex)
+		{
+			std::string err_string = "Error instantiating navX MXP:    ";
+			err_string += ex.what();
+			DriverStation::ReportError(err_string.c_str());
+		}
+	}
+
+	void RobotInit()
+	{
+		// Add all of the data to the dashboard
+		chooser.AddDefault(autoNameDefault, autoNameDefault);
+		chooser.AddObject(autoNameCustom, autoNameCustom);
+		chooser.AddObject(driveStraight, driveStraight);
+		chooser.AddObject(goToGearR, goToGearR);
+		chooser.AddObject(goToGearL, goToGearL);
+		chooser.AddObject(none, none);
+		frc::SmartDashboard::PutData("Auto Modes", &chooser);
+
+		// Set motor inversions
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kFrontLeftMotor, false);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kFrontRightMotor, false);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kRearLeftMotor, false);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kRearRightMotor, false);
+		shooter.SetInverted(false);
+
+		// Set gear to false.
+		Gear.Set(false);
+	}
+
+	void Autonomous()
+	{
+		// Get the selected element.
+		//auto autoSelected = chooser.GetSelected();
+		std::string autoSelected = frc::SmartDashboard::GetString("Auto Selector", autoNameDefault);
+		std::cout << "Auto selected: " << autoSelected << std::endl;
+
+		//if (autoSelected == none)
+		//{
+
+		//}
+
+		if (autoSelected == autoNameCustom)
+		{
+			// Custom Auto goes here
+			std::cout << "Running custom Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 1.0); // spin at half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		}
+
+		else if (autoSelected == driveStraight)
+		{
+			// Drive straight for 5 seconds
+			std::cout << "Running drive straight" << std::endl;
+			ahrs->Reset();
+			driveTrain.SetSafetyEnabled(false);
+			std::cout << "Angle: " << ahrs->GetAngle() << std::endl;
+			double seconds = 5;
+			for ( double i = 0; i < seconds * 20; i++ )
+			{
+				driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+				frc::Wait(.05);
+			}
+			driveTrain.TankDrive(0.0,0.0);
+		}
+
+		else if (autoSelected == goToGearR)
+		{
+			// Startup
+			Gear.Set(false);
+			std::cout << "Running go to gear [ L ] "<< std::endl;
+			ahrs->Reset();
+			driveTrain.SetSafetyEnabled(false);
+			std::cout << "Angle: " << ahrs->GetAngle() << std::endl;
+
+			// Drive straight for 3 seconds.
+			double seconds = 3;
+			for ( double i = 0; i < seconds * 20; i++ )
+			{
+				driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+				frc::Wait(.05);
+			}
+			driveTrain.TankDrive(0.0,0.0);
+
+			// Now, rotate to the degree.
+			RotateToDegrees(-61.22, 5.0);
+
+			// Now, drive straight.
+			ahrs->Reset();
+
+			// Wait 1/2 second, then drive straight for 5 seconds.
+			frc::Wait(0.5);
+			seconds = 5.0;
+			for ( double i = 0; i < seconds * 20; i++ )
+			{
+				driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+				frc::Wait(.05);
+			}
+			driveTrain.TankDrive(0.0,0.0);
+
+			// Open up gear and reverse
+			Gear.Set(true);
+			driveTrain.TankDrive(0.5, 0.5);
+			frc::Wait(0.75);
+
+			// Close gear
+			Gear.Set(false);
+			driveTrain.TankDrive(0.0,0.0);
+		}
+
+		// This method will grab the gear from the left side.
+		else if (autoSelected == goToGearL)
+		{
+			// Startup
+			Gear.Set(false);
+			std::cout << "Running go to gear [ L ] "<< std::endl;
+			ahrs->Reset();
+			driveTrain.SetSafetyEnabled(false);
+			std::cout << "Angle: " << ahrs->GetAngle() << std::endl;
+
+			// Drive straight for 3 seconds.
+			double seconds = 3;
+			for ( double i = 0; i < seconds * 20; i++ )
+			{
+				driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+				frc::Wait(.05);
+			}
+			driveTrain.TankDrive(0.0,0.0);
+
+			// Now, rotate to the degree.
+			RotateToDegrees(61.22, 5.0);
+
+			// Now, drive straight.
+			ahrs->Reset();
+
+			// Wait 1/2 second, then drive straight for 5 seconds.
+			frc::Wait(0.5);
+			seconds = 5.0;
+			for ( double i = 0; i < seconds * 20; i++ )
+			{
+				driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+				frc::Wait(.05);
+			}
+			driveTrain.TankDrive(0.0,0.0);
+
+			// Open up gear and reverse
+			Gear.Set(true);
+			driveTrain.TankDrive(0.5, 0.5);
+			frc::Wait(0.75);
+
+			// Close gear
+			Gear.Set(false);
+			driveTrain.TankDrive(0.0,0.0);
+
+			// Start the shooer, and line up, and start the hoppers..
+			shooter.Set(true);
+			RotateToDegrees(-37.14, 5);
+			DriveStraightFor(0.5);
+			driveTrain.TankDrive(0.0,0.0);
+			driveTrain.TankDrive(0.5, 0.5);
+			frc::Wait(0.9);
+			driveTrain.TankDrive(0.0, 0.0);
+			for (double i = 0 ; i < 10 * 20; i++)
+			{
+				hopper.Drive(1.1, 0);
+				frc::Wait(0.05);
+			}
+
+			// Finally, stop the shooter.
+			shooter.Set(false);
+		}
+
+		else
+		{
+			// Startup
+						Gear.Set(false);
+						std::cout << "Running go to gear [ L ] "<< std::endl;
+						ahrs->Reset();
+						driveTrain.SetSafetyEnabled(false);
+						std::cout << "Angle: " << ahrs->GetAngle() << std::endl;
+
+						// Drive straight for 3 seconds.
+						double seconds = 3;
+						for ( double i = 0; i < seconds * 20; i++ )
+						{
+							driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+							frc::Wait(.05);
+						}
+						driveTrain.TankDrive(0.0,0.0);
+
+						// Now, rotate to the degree.
+						RotateToDegrees(61.22, 5.0);
+
+						// Now, drive straight.
+						ahrs->Reset();
+
+						// Wait 1/2 second, then drive straight for 5 seconds.
+						frc::Wait(0.5);
+						seconds = 5.0;
+						for ( double i = 0; i < seconds * 20; i++ )
+						{
+							driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+							frc::Wait(.05);
+						}
+						driveTrain.TankDrive(0.0,0.0);
+
+						// Open up gear and reverse
+						Gear.Set(true);
+						driveTrain.TankDrive(0.5, 0.5);
+						frc::Wait(0.75);
+
+						// Close gear
+						Gear.Set(false);
+						driveTrain.TankDrive(0.0,0.0);
+
+						// Start the shooer, and line up, and start the hoppers..
+						shooter.Set(true);
+						RotateToDegrees(-37.14, 5);
+						DriveStraightFor(0.5);
+						driveTrain.TankDrive(0.0,0.0);
+						driveTrain.TankDrive(0.5, 0.5);
+						frc::Wait(0.9);
+						driveTrain.TankDrive(0.0, 0.0);
+						for (double i = 0 ; i < 10 * 20; i++)
+						{
+							hopper.Drive(1.1, 0);
+							frc::Wait(0.05);
+						}
+
+						// Finally, stop the shooter.
+						shooter.Set(false);
+		}
+	}
+
+	/// <summary>
+	/// This method will drive straight for a given ammount of time.
+	/// </summary>
+	/// <param name="time">This is the ammount of time that the robot will drive forward for.</param>
+	void DriveStraightFor(double time)
+	{
+		ahrs -> Reset();
+		for ( double i = 0; i < time * 20; i++ )
+		{
+			driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+			frc::Wait(.05);
+		}
+	}
+	void DriveBackFor(double time)
+	{
+		ahrs->Reset();
+		for (double i = 0; i < time * 20; i++)
+		{
+			driveTrain.TankDrive(GetMotorOutput(ahrs->GetAngle(), 0) * .5, GetMotorOutput(ahrs->GetAngle(), 1) * .5);
+		}
+	}
+
+	void RotateToDegrees ( float degrees, double tolerance )
+	{
+		std::cout << "Set tol" << std::endl;
+		float high = degrees + tolerance;
+		float low = degrees - tolerance;
+
+		std::cout << high << std::endl;
+		std::cout << low << std::endl;
+		std::cout << ahrs->GetAngle() << std::endl;
+		std::cout << "Start loop" << std::endl;
+
+		while ( low  > ahrs->GetAngle() || ahrs->GetAngle() > high)
+		{
+			std::cout << "Angle: " << ahrs->GetAngle() << std::endl;
+			// If less than low go right.
+			if (ahrs->GetAngle() < low)
+			{
+
+				driveTrain.TankDrive(0.5, -0.5);
+			}
+			if (ahrs ->GetAngle() > high)
+			{
+				driveTrain.TankDrive(-0.5, 0.5);
+			}
+		}
+
+		driveTrain.TankDrive(0.0,0.0);
+
+		std::cout << "Loop ended." << std::endl;
+	}
+
+	double GetMotorOutput(float degrees, int sel)
+	{
+		// max ouputs
+		int rX = 1;
+		int lX = 1;
+		float lP = 0;
+		float rP = 0;
+		float mid = 15.0;
+
+		// Plug in the function for the new right output.
+		if (degrees > 360)
+		{
+			degrees -= 360;
+		}
+		if (degrees < -360)
+		{
+			degrees += 360;
+		}
+
+        rP = rX - ( ( 1.0 / mid ) * -degrees * rX );
+        lP = lX - ( ( 1.0 / mid ) * degrees * lX );
+
+        if (rP > 1)
+        {
+            rP = 1;
+        }
+        else if (rP < -1)
+        {
+            rP = -1;
+        }
+
+        if ( lP > 1 )
+        {
+            lP = 1;
+        }
+        else if ( lP < -1 )
+        {
+            lP = -1;
+        }
+
+        double ret = (sel == 1) ? rP : lP;
+        std::cout << "New motor power:  " << ret << std::endl;
+        return ret;
+	}
+
+
+	void OperatorControl() override
+	{
+
+		// Set Safety
+		//driveTrain.SetSafetyEnabled(true);
+
+		while (IsOperatorControl() && IsEnabled())
+		{
+			// Print out the rotation
+			std::cout << "Yaw:    " << ahrs->GetAngle() << std::endl;
+
+
+			// Drive train controls
+			// First, check if the right ( turbo ) trigger has been presesd. If so, use full values.
+			// If not, then use the scaler.
+			if (joystick0.GetRawAxis(rt))
+			{
+				driveTrain.TankDrive(joystick0.GetRawAxis(lsy), joystick0.GetRawAxis(rsy));
+			}
+			else
+			{
+				driveTrain.TankDrive(joystick0.GetRawAxis(lsy) * 0.7, joystick0.GetRawAxis(rsy) * 0.7);
+			}
+
+			// Shooter toggle on x
+			if (joystick1.GetRawButton(1))
+			{
+				shooterStatus = !shooterStatus;
+
+				if (shooterStatus)
+				{
+					shooter.Set(1);
+				}
+				else
+				{
+					shooter.Set(0);
+				}
+
+				frc::Wait(.2);
+			}
+
+			// If the 4th button is being pressed, then use the drive straight function.
+
+			if (joystick1.GetRawButton(2))
+			{
+				intake.Set(1);
+			}
+			else
+			{
+				intake.Set(0);
+			}
+
+			if (joystick0.GetRawButton(4))
+			{
+
+				driveTrain.TankDrive(-GetMotorOutput(ahrs->GetAngle(), 1) *.5 ,-GetMotorOutput(ahrs->GetAngle(), 0) *.5);
+
+			}
+
+			if (joystick0.GetRawButton(2))
+			{
+				std::cout<< "Resetting..." << std::endl;
+				ahrs->Reset();
+			}
+
+
+			// Hopper controls
+			if (joystick1.GetRawAxis(rt) > 0.3)
+			{
+				hopper.TankDrive(1, 0.0);
+			}
+			else if (joystick1.GetRawAxis(lt) > 0.3)
+			{
+				hopper.TankDrive(0.0, 1);
+			}
+			else
+			{
+				hopper.TankDrive(0.0, 0.0);
+			}
+
+			if (joystick1.GetRawButton(7))
+			{
+				Lift.Set(1);
+			}
+			else if (joystick1.GetRawButton(8))
+			{
+				Lift.Set(.5);
+			}
+			else
+			{
+				Lift.Set(0);
+			}
+
+			if (joystick1.GetRawButton(3))
+			{
+				std::cout<<"Running gear.." <<std::endl;
+				gearStatus = !gearStatus;
+
+				if (gearStatus)
+				{
+					Gear.Set(true);
+				}
+				else
+				{
+					Gear.Set(false);
+				}
+				frc::Wait(.2);
+			}
+
+			frc::Wait(0.005);
+		}
+	}
+
+	void Test() override
+	{
+
+	}
+};
+
+START_ROBOT_CLASS(Robot)

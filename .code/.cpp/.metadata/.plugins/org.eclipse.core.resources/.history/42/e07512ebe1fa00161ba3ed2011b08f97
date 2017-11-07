@@ -1,0 +1,20 @@
+/*
+ * Ports.cpp
+ *
+ *  Created on: Feb 24, 2017
+ *      Author: AhriFox950
+ */
+
+#include <Ports.h>
+
+#define rearRight 0
+
+Ports::Ports() {
+	// TODO Auto-generated constructor stub
+
+}
+
+Ports::~Ports() {
+	// TODO Auto-generated destructor stub
+}
+

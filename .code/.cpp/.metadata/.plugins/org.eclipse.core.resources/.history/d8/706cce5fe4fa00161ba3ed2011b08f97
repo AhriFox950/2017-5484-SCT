@@ -1,0 +1,87 @@
+#include <iostream>
+#include <memory>
+#include <string>
+
+#include <Joystick.h>
+#include <SampleRobot.h>
+#include <SmartDashboard/SendableChooser.h>
+#include <SmartDashboard/SmartDashboard.h>
+#include <RobotDrive.h>
+#include <Timer.h>
+#include <Victor.h>
+#include <Ports.h>
+
+class Robot: public frc::SampleRobot {
+
+	int rearRight = 0;
+	int rearLeft = 1;
+	int frontRight = 2;
+	int frontLeft = 3;
+
+	frc::RobotDrive driveTrain  {rearRight, rearLeft, frontRight, frontLeft};
+
+	frc::Joystick joystick0 { 0 };
+	frc::Joystick joystick1 { 1 };
+
+	frc::SendableChooser<std::string> chooser;
+	const std::string autoNameDefault = "Default";
+	const std::string autoNameCustom = "My Auto";
+
+public:
+	Robot() {
+		driveTrain.SetExpiration(0.1);
+	}
+
+	void RobotInit() {
+		chooser.AddDefault(autoNameDefault, autoNameDefault);
+		chooser.AddObject(autoNameCustom, autoNameCustom);
+		frc::SmartDashboard::PutData("Auto Modes", &chooser);
+	}
+
+	void Autonomous() {
+		auto autoSelected = chooser.GetSelected();
+		// std::string autoSelected = frc::SmartDashboard::GetString("Auto Selector", autoNameDefault);
+		std::cout << "Auto selected: " << autoSelected << std::endl;
+
+		if (autoSelected == autoNameCustom) {
+			// Custom Auto goes here
+			std::cout << "Running custom Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 1.0); // spin at half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		} else {
+			// Default Auto goes here
+			std::cout << "Running default Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 0.0); // drive forwards half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		}
+	}
+
+	/*
+	 * Runs the motors with arcade steering.
+	 */
+	void OperatorControl() override {
+		driveTrain.SetSafetyEnabled(true);
+		while (IsOperatorControl() && IsEnabled()) {
+			// drive with arcade style (use right joystick0)
+			//driveTrain.ArcadeDrive(joystick0);
+
+			driveTrain.TankDrive(joystick0.GetRawAxis(1) * -1, joystick0.GetRawAxis(5) * -1, false);
+
+			// wait for a motor update time
+			frc::Wait(0.005);
+		}
+	}
+
+	/*
+	 * Runs during test mode
+	 */
+	void Test() override {
+
+	}
+};
+
+START_ROBOT_CLASS(Robot)

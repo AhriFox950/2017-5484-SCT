@@ -1,0 +1,170 @@
+#include <iostream>
+#include <memory>
+#include <string>
+#include <thread>
+
+#include <Joystick.h>
+#include <SampleRobot.h>
+#include <SmartDashboard/SendableChooser.h>
+#include <SmartDashboard/SmartDashboard.h>
+#include <RobotDrive.h>
+#include <Timer.h>
+#include <Victor.h>
+#include <Solenoid.h>
+
+class Robot: public frc::SampleRobot
+{
+	// Motor ports
+	int rearRight = 0;
+	int rearLeft = 2;
+	int frontRight = 1;
+	int frontLeft = 3;
+	int _shooter = 5;
+	int lift = 4;
+	int _intake = 8;
+	int hopperLeft = 7;
+	int hopperRight = 8;
+
+	public : int _gear = false;
+
+	// Scalers
+	int shooterPower = .76;
+	int drivePower = .70;
+
+	// Button & Axis mapping
+	int rt = 3;
+	int lt = 2;
+	int rsy = 1;
+	int lsy = 5;
+	int bx = 2;
+	int ab = 0;
+
+	// Motors
+	frc::RobotDrive driveTrain  {rearRight, rearLeft, frontRight, frontLeft};
+	frc::RobotDrive hopper { hopperLeft, hopperRight };
+
+	frc::Victor shooter  { _shooter };
+	frc::Victor intake { _intake };
+
+	// Controllers
+	frc::Joystick joystick0 { 0 };
+	public : frc::Joystick joystick1 { 1 };
+
+	// Pnumatics
+	public : frc::Solenoid gear { 0 };
+
+	// Misc
+	frc::SendableChooser<std::string> chooser;
+	const std::string autoNameDefault = "Default";
+	const std::string autoNameCustom = "My Auto";
+
+public:
+	Robot()
+	{
+		driveTrain.SetExpiration(0.1);
+	}
+
+	void RobotInit()
+	{
+		chooser.AddDefault(autoNameDefault, autoNameDefault);
+		chooser.AddObject(autoNameCustom, autoNameCustom);
+		frc::SmartDashboard::PutData("Auto Modes", &chooser);
+
+		// Invert motors
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kFrontLeftMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kFrontRightMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kRearLeftMotor, true);
+		driveTrain.SetInvertedMotor(frc::RobotDrive::kRearRightMotor, true);
+		//shooter.SetInverted(false);
+	}
+
+	void Autonomous()
+	{
+		auto autoSelected = chooser.GetSelected();
+		// std::string autoSelected = frc::SmartDashboard::GetString("Auto Selector", autoNameDefault);
+		std::cout << "Auto selected: " << autoSelected << std::endl;
+
+		if (autoSelected == autoNameCustom)
+		{
+			// Custom Auto goes here
+			std::cout << "Running custom Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 1.0); // spin at half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		}
+
+		else
+		{
+			// Default Auto goes here
+			std::cout << "Running default Autonomous" << std::endl;
+			driveTrain.SetSafetyEnabled(false);
+			driveTrain.Drive(-0.5, 0.0); // drive forwards half speed
+			frc::Wait(2.0);                // for 2 seconds
+			driveTrain.Drive(0.0, 0.0);  // stop robot
+		}
+	}
+
+
+	void Gear()
+	{
+
+	}
+
+	void OperatorControl() override
+	{
+
+		// Set Safety
+		driveTrain.SetSafetyEnabled(true);
+
+		// Basic teleop
+
+		// Estanciate methods
+		//Robot * myBot = new Robot();
+		//std::thread firstThread (Gear);
+
+		//Gear *g = new Gear();
+
+		//std::thread th (&Robot::Gear, 0);
+
+
+		while (IsOperatorControl() && IsEnabled())
+		{
+
+			// Drive train controls
+			// First, check if the right ( turbo ) trigger has been presesd. If so, use full values.
+			// If not, then use the scaler.
+			double _drivePower = (joystick0.GetRawAxis(rt) > 0.3) ? 1 : drivePower;
+
+			driveTrain.TankDrive(joystick0.GetRawAxis(lsy) * _drivePower, joystick0.GetRawAxis(rsy) * _drivePower);
+
+			// Shooter
+			// Check if the shooter has been presesd. If so, set the power to the defalut value.
+			// If not, the set it to 0.
+			double _shooterPower = (joystick1.GetRawButton(bx)) ? shooterPower : 0;
+			shooter.Set(_shooterPower);
+
+			// Inake
+			// Check if the left trigger has been pressed. If so, set equal to 1.
+			// If not, set equal to 0
+			double intakePower = (joystick0.GetRawAxis(lt)) ? 1 : 0;
+			intake.Set(intakePower);
+
+
+			// Gear
+			//Gear();
+
+			// wait for a motor update time
+			frc::Wait(0.005);
+		}
+	}
+
+	void Test() override
+	{
+
+	}
+};
+
+
+
+START_ROBOT_CLASS(Robot)
